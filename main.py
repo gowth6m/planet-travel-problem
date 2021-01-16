@@ -4,6 +4,26 @@
 import sys
 
 ZEARTH_COORDINATE = []
+STATION_COORDINATES = []
+ASSIGNED_COORDINATES = {}
+
+
+class Graph:
+    """
+    Graph class used for teleportation stations
+    """
+    graph_dict = {}
+
+    def addEdge(self, node, neighbour):
+        if node not in self.graph_dict:
+            self.graph_dict[node] = [neighbour]
+        else:
+            self.graph_dict[node].append(neighbour)
+
+    def show_edges(self):
+        for node in self.graph_dict:
+            for neighbour in self.graph_dict[node]:
+                print("(", node, ", ", neighbour, ")")
 
 
 def askForInput():
@@ -29,6 +49,7 @@ def askForInput():
                     raw_c = input()
                     c1, c2, c3 = raw_c.split()
                     coordinate[0], coordinate[1], coordinate[2] = float(c1), float(c2), float(c3)
+                    STATION_COORDINATES.append(coordinate)
                 # Checking for correct range if the station coordinates
                 correctFormat = True
                 for coordinate in stationCoordinates:
@@ -40,7 +61,24 @@ def askForInput():
             print("Error, incorrect format.")
     # Storing the initial coordinate of Zearth
     ZEARTH_COORDINATE.append(x), ZEARTH_COORDINATE.append(y), ZEARTH_COORDINATE.append(z)
-    return stationCoordinates
+    # return stationCoordinates
+
+
+def assignNodesToCoordinates():
+    """
+    Each node is given a coordinate and assigned to global dictionary ASSIGNED_COORDINATES
+    :return: null
+    """
+    counter = 0
+    for i in STATION_COORDINATES:
+        ASSIGNED_COORDINATES[counter] = i
+        counter += 1
+
+
+def createGraphForStations():
+    stations = Graph()
+        
+    return stations
 
 
 def findSafestPathDistance():
@@ -60,5 +98,12 @@ def checkForInputFile():
 
 if __name__ == '__main__':
     # checkForInputFile()
-    print(askForInput())
-    print("Zearth Coordinate: ",ZEARTH_COORDINATE)
+    try:
+        askForInput()
+        assignNodesToCoordinates()
+    except KeyboardInterrupt:
+        pass
+
+    # print(STATION_COORDINATES)
+    print("Dictionary of nodes: ", ASSIGNED_COORDINATES)
+    # print("Zearth Coordinate: ",ZEARTH_COORDINATE)
