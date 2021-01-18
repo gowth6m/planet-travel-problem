@@ -2,20 +2,18 @@
 
 # Coordinate of Zearth
 import math
-import sys
-
-from graph import Graph
+import fileinput
 
 EARTH_COORDINATE = [0.0, 0.0, 0.0]
 ZEARTH_COORDINATE = []
 STATION_COORDINATES = []
-ASSIGNED_COORDINATES = {}
+ASSIGNED_COORDINATES = {0: EARTH_COORDINATE}
 
 
-def askForInput():
+def ask_for_input():
     """
     Asks user for Zearth's coordinate, asks user for number of stations then asks for the station coordinates.
-    Finally stores Zeath's coordinate in global variable ZEARTH_COORDINATE and returns 2D array of coordinates of
+    Finally stores Zearth's coordinate in global variable ZEARTH_COORDINATE and returns 2D array of coordinates of
     teleportation stations.
     :return: a 2D array of coordinates of the teleportation stations in space
     """
@@ -51,51 +49,42 @@ def askForInput():
     # return stationCoordinates
 
 
-def get_graph(num_nodes, nodes, weight_Func):
-    """
-    Creates a fully connected graph in dictionary form for the nodes. Each edge has a weight value determined by weight_Func
-    """
-    graph = {}  # Creates empty graph with the required number of nodes with no edges
-    for i in range(num_nodes):
-        graph[str(i)] = {}  # Each node is labeled with a number e.g: zearth = '1'
-
-    # Adds each edge to the fully connected graph with weight values assigned
-    for i, node1 in enumerate(nodes):
-        for j, node2 in enumerate(nodes):
-            if i != j:
-                if str(j) not in graph[str(i)]:  # Assuring each weight is only calculated once
-                    weight = weight_Func(node1, node2)
-                    graph[str(i)][str(j)] = weight
-                    graph[str(j)][str(i)] = weight
-    return graph
-
-
-def assignNodesToCoordinates():
+def assign_nodes_to_coordinates():
     """
     Each node is given a coordinate and assigned to global dictionary ASSIGNED_COORDINATES
     :return: null
     """
-    counter = 0
+    counter = 1
     for i in STATION_COORDINATES:
         ASSIGNED_COORDINATES[counter] = i
         counter += 1
+    ASSIGNED_COORDINATES[counter] = ZEARTH_COORDINATE  # adding in zearth's coordinates to assigned_coordinates
 
 
-def createGraphForStations():
+def get_weighted_graph():
+    """
+    Format of the graph dictionary = { node_1 : [[node_2, weight_1&2],[node_3, weight_1&3]] }
+    :return: a weighted graph of stations including Earth and Zearth.
+    """
     graph = {}
-    stations = Graph()
-    # { node_1 : [[node_2, weight_1&2],[node_3, weight_1&3]}
+    final_node = len(ASSIGNED_COORDINATES)  # Zearth's node
     for i in ASSIGNED_COORDINATES.keys():
+        if i == 0:
+            graph[0] = [0, ASSIGNED_COORDINATES[0]]  # setting 0th node as earth's coordinate
+        if i == final_node:
+            graph[final_node] = [final_node, ASSIGNED_COORDINATES[final_node]]
+
         graph[i] = []
         for j in ASSIGNED_COORDINATES.keys():
             if j != i:
-                graph[i].append([j, getWeight(ASSIGNED_COORDINATES[i], ASSIGNED_COORDINATES[j])])
-    print(graph)
-    return stations
+                graph[i].append([j, get_weight(ASSIGNED_COORDINATES[i], ASSIGNED_COORDINATES[j])])
+    # print(graph)
+    return graph
 
 
-def getWeight(node1, node2):
+def get_weight(node1, node2):
     """
+    Calculates the Euclidean distance between two coordinates
     :param node1: array containing x,y,z values for first node
     :param node2: array containing x,y,z values for second node
     :return: weight of the edge between the 2 nodes
@@ -107,29 +96,28 @@ def getWeight(node1, node2):
     return weight
 
 
-def findSafestPathDistance():
+def find_safest_path_distance():
     pathDistance = 0
     return pathDistance
 
 
-def checkForInputFile():
-    # print command line arguments
-    args = []
-    for arg in sys.argv[1:]:
-        args.append(arg)
-        print(args)
-    if args[0] == '<':
-        print("USING INPUT FILE" + args[1])
+# def checkForInputFile():
+#     # print command line arguments
+#     args = []
+#     for arg in sys.argv[1:]:
+#         args.append(arg)
+#         print(args)
+#     if args[0] == '<':
+#         print("USING INPUT FILE" + args[1])
 
 
 if __name__ == '__main__':
-    # checkForInputFile()
     try:
-        askForInput()
-        assignNodesToCoordinates()
+        ask_for_input()
+        assign_nodes_to_coordinates()
     except KeyboardInterrupt:
         pass
-    createGraphForStations()
+    print(get_weighted_graph())
     # print(STATION_COORDINATES)
     # print(getWeight([2, 3.5, 2], [2, 12, 213]))
     print("Dictionary of nodes: ", ASSIGNED_COORDINATES)
