@@ -4,6 +4,8 @@
 import math
 import sys
 
+from graph import Graph
+
 EARTH_COORDINATE = [0.0, 0.0, 0.0]
 ZEARTH_COORDINATE = []
 STATION_COORDINATES = []
@@ -49,24 +51,6 @@ def askForInput():
     # return stationCoordinates
 
 
-class Graph:
-    """
-    Graph class used for teleportation stations
-    """
-    graph_dict = {}
-
-    def addEdge(self, node, neighbour):
-        if node not in self.graph_dict:
-            self.graph_dict[node] = [neighbour]
-        else:
-            self.graph_dict[node].append(neighbour)
-
-    def show_edges(self):
-        for node in self.graph_dict:
-            for neighbour in self.graph_dict[node]:
-                print("(", node, ", ", neighbour, ")")
-
-
 def get_graph(num_nodes, nodes, weight_Func):
     """
     Creates a fully connected graph in dictionary form for the nodes. Each edge has a weight value determined by weight_Func
@@ -98,9 +82,15 @@ def assignNodesToCoordinates():
 
 
 def createGraphForStations():
+    graph = {}
     stations = Graph()
-    # for i in ASSIGNED_COORDINATES.keys():
-    #     stations.addEdge()
+    # { node_1 : [[node_2, weight_1&2],[node_3, weight_1&3]}
+    for i in ASSIGNED_COORDINATES.keys():
+        graph[i] = []
+        for j in ASSIGNED_COORDINATES.keys():
+            if j != i:
+                graph[i].append([j, getWeight(ASSIGNED_COORDINATES[i], ASSIGNED_COORDINATES[j])])
+    print(graph)
     return stations
 
 
@@ -141,6 +131,6 @@ if __name__ == '__main__':
         pass
     createGraphForStations()
     # print(STATION_COORDINATES)
-    # print(getWeight([2, 3, 2], [2, 1, 2]))
+    # print(getWeight([2, 3.5, 2], [2, 12, 213]))
     print("Dictionary of nodes: ", ASSIGNED_COORDINATES)
     # print("Zearth Coordinate: ",ZEARTH_COORDINATE)
