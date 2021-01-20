@@ -1,4 +1,4 @@
-# planet-travel-problem
+# Planet Travel Problem (PolyAI)
 
 Mr. Little Z is on winter vacation, and he has decided to go to the planet Zearth. The only way of traveling through space is by using the aliens' teleportation machines. Mr. Little Z can teleport directly from planet Earth to the planet Zearth, but it is really risky. The aliens haven't perfected their teleportation machine. The greater the distance of traveling the bigger is risk. Because of this, the aliens have built more teleportation stations all throughout space. Teleporting through consecutive teleportation stations lowers the risk.
 
