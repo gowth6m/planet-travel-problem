@@ -5,24 +5,24 @@ ZEARTH_COORDINATE = []
 STATION_COORDINATES = []
 
 
-def line_to_coord(line):
+def str_to_coord(line):
     """
-    Takes a string and turns it into a list that represents coordinates.
+    Takes a string, splits the string and turns it into a list that represents coordinates.
     :param line: string of coordinate
     :return: a list of floats that represents a coordinate
     """
-    coords = []
+    coordinates = []
     for i in line.split():
         i = float(i)
-        if not (-10000 <= i <= 10000):
+        if not (-10000 <= i <= 10000):  # Checks if coordinate is within given range
             raise Exception('Invalid coordinate value, not within given range')
-        coords.append(i)
-    if len(coords) > 3:  # Checks if there are only 3 numbers in a coordinate
+        coordinates.append(i)
+    if len(coordinates) > 3:  # Checks if there are only 3 numbers in a coordinate
         raise Exception('Invalid coordinate value, more than 3 coordinate values')
-    return coords
+    return coordinates
 
 
-def ask_for_input():
+def get_input():
     """
     Asks user for Zearth's coordinate, asks user for number of stations then asks for the station coordinates.
     Finally stores Zearth's coordinate in global variable ZEARTH_COORDINATE and returns 2D array of coordinates of
@@ -32,12 +32,12 @@ def ask_for_input():
     STATION_COORDINATES.append(EARTH_COORDINATE)
     raw_zearth_coord = input()
     global ZEARTH_COORDINATE
-    ZEARTH_COORDINATE = line_to_coord(raw_zearth_coord)
+    ZEARTH_COORDINATE = str_to_coord(raw_zearth_coord)
     no_of_stations = int(input())
     if 1 <= no_of_stations <= 2000:
         while no_of_stations > 0:
             raw_station_coord = input()
-            STATION_COORDINATES.append(line_to_coord(raw_station_coord))
+            STATION_COORDINATES.append(str_to_coord(raw_station_coord))
             no_of_stations -= 1
     else:
         raise Exception("Invalid format, number of coordinates not within given range")
@@ -72,36 +72,56 @@ def get_weighted_graph():
     return graph
 
 
-def find_safest_path_distance(graph, start, finish):
-    max_distance = {}
-    unseenNodes = graph
-    infinity = float("inf")
-    for node in unseenNodes:  # Initiates the minimum maximum distance for each node to be infinity
+def modified_dijkstra(graph, start, finish):
+    """
+    Modified version of dijkstra's algorithm that calculates the max min path taken.
+    :param graph: graph of the space stations
+    :param start: starting node (Earth)
+    :param finish: finishing node (Zearth)
+    :return: max teleporting distance, total distance travelled, a list of the path taken
+    """
+    total_distance, infinity = 0, float('inf')
+    max_distance, predecessor, tracker = {}, {}, {}
+    unvisitedNodes = graph
+    path = []
+
+    for node in unvisitedNodes:
         max_distance[node] = infinity
     max_distance[start] = 0
 
-    while unseenNodes:
+    while len(unvisitedNodes) > 0:
         minNode = None
-        for node in unseenNodes:  # Finding the minimum weighted node so far
-            if minNode is None:  # Base case
+        for node in unvisitedNodes:
+            if minNode is None:
                 minNode = node
             elif max_distance[node] < max_distance[minNode]:
                 minNode = node
 
         for childNode, weight in graph[minNode].items():
-            if max(weight, max_distance[minNode]) < max_distance[childNode]:  # Takes maximum of weights along path
+            if max(weight, max_distance[minNode]) < max_distance[childNode]:
                 max_distance[childNode] = max(weight, max_distance[minNode])
-        unseenNodes.pop(minNode)  # Breaks loop when finished
+                predecessor[childNode] = minNode
+        tracker[minNode] = unvisitedNodes[minNode]
+        unvisitedNodes.pop(minNode)
 
-    return max_distance[finish]
+    currentNode = finish
+    while currentNode != start:
+        path.insert(0, currentNode)
+        currentNode = predecessor[currentNode]
+        total_distance += tracker.get(finish).get(currentNode)
+    path.insert(0, start)
+    return max_distance[finish], total_distance, path
 
 
 if __name__ == '__main__':
     try:
-        ask_for_input()
-        world = get_weighted_graph()
-        # Earth = 0th node, Zearth = Last node
-        shortest_distance = find_safest_path_distance(world, 0, len(world) - 1)
-        print(shortest_distance)
+        get_input()
+        space_graph = get_weighted_graph()
+        earth = 0  # Earth = 0th node
+        zearth = len(space_graph)  # Zearth = Last node
+        max_teleport_dist, total_path_dist, safest_path = modified_dijkstra(space_graph, earth, zearth)
+        print(round(max_teleport_dist, 2))  # rounding to 2 dp
+        print("Total distance: ", total_path_dist)
+        print("Path taken: ", safest_path)
     except KeyboardInterrupt:
         raise Exception("Program interrupted")
