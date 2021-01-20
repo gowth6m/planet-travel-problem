@@ -18,3 +18,11 @@ To the standard output write one real number to 2 decimal places, representing t
 ```console
 python3 main.py < input.txt
 ```
+
+## EXPECTED TXT FILE CONTENT:
+Input (stdin):
+```properties
+2.00 2.00 2.00 
+3
+0.00 0.00 2.00 0.00 2.00 2.00 2.00 0.00 0.00
+```
