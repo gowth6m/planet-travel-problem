@@ -16,5 +16,5 @@ To the standard output write one real number to 2 decimal places, representing t
 
 ## HOW TO RUN:
 ```bat
-python3 main.py < input.txt
+prompt> python3 main.py < input.txt
 ```
