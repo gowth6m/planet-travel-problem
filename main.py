@@ -1,9 +1,5 @@
 # Question 1 - Planet Problem
 
-EARTH_COORDINATE = [0.0, 0.0, 0.0]
-ZEARTH_COORDINATE = []
-STATION_COORDINATES = []
-
 
 def str_to_coord(line):
     """
@@ -29,19 +25,20 @@ def get_input():
     teleportation stations.
     :return: a 2D array of coordinates of the teleportation stations in space
     """
-    STATION_COORDINATES.append(EARTH_COORDINATE)
+    earth_coord = [0.0, 0.0, 0.0]
+    all_coords = [earth_coord]
     raw_zearth_coord = input()
-    global ZEARTH_COORDINATE
-    ZEARTH_COORDINATE = str_to_coord(raw_zearth_coord)
+    zearth_coord = str_to_coord(raw_zearth_coord)
     no_of_stations = int(input())
     if 1 <= no_of_stations <= 2000:
         while no_of_stations > 0:
             raw_station_coord = input()
-            STATION_COORDINATES.append(str_to_coord(raw_station_coord))
+            all_coords.append(str_to_coord(raw_station_coord))
             no_of_stations -= 1
     else:
         raise Exception("Invalid format, number of coordinates not within given range")
-    STATION_COORDINATES.append(ZEARTH_COORDINATE)
+    all_coords.append(zearth_coord)
+    return all_coords
 
 
 def get_weight(node1, node2):
@@ -58,23 +55,23 @@ def get_weight(node1, node2):
     return weight
 
 
-def get_weighted_graph():
+def get_weighted_graph(coords):
     """
     Format of the graph dictionary = {node_1 : {node_2: weight_1&2, node_3: weight_1&3}}
     :return: a weighted graph of stations including Earth and Zearth.
     """
     graph = {}
-    for i in range(len(STATION_COORDINATES)):
+    for i in range(len(coords)):
         graph[i] = {}
-        for j in range(len(STATION_COORDINATES)):
+        for j in range(len(coords)):
             if j != i:
-                graph[i].update({j: get_weight(STATION_COORDINATES[i], STATION_COORDINATES[j])})
+                graph[i].update({j: get_weight(coords[i], coords[j])})
     return graph
 
 
 def modified_dijkstra(graph, start, finish):
     """
-    Modified version of dijkstra's algorithm that calculates the max min path taken.
+    Modified version of dijkstra's algorithm that calculates the min max distance.
     :param graph: graph of the space stations
     :param start: starting node (Earth)
     :param finish: finishing node (Zearth)
@@ -115,11 +112,11 @@ def modified_dijkstra(graph, start, finish):
 
 if __name__ == '__main__':
     try:
-        get_input()
-        space_graph = get_weighted_graph()
-        earth = 0  # Earth = 0th node
-        zearth = len(space_graph)  # Zearth = Last node
-        max_teleport_dist, total_path_dist, safest_path = modified_dijkstra(space_graph, earth, zearth)
+        coordinates = get_input()
+        g = get_weighted_graph(coordinates)
+        earth = 0  # Earth is 0th node
+        zearth = len(g) - 1  # Zearth is last node
+        max_teleport_dist, total_path_dist, safest_path = modified_dijkstra(g, earth, zearth)
         print(round(max_teleport_dist, 2))  # rounding to 2 dp
         print("Total distance: ", total_path_dist)
         print("Path taken: ", safest_path)
