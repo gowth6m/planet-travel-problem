@@ -14,7 +14,7 @@ Note: The 3D coordinates of Earth are (0.0, 0.0, 0.0). On the planets Earth and 
 ## OUTPUT:
 To the standard output write one real number to 2 decimal places, representing the maximum distance of the safest path on Mr. Little Z's way to Zearth.
 
-## HOW TO RUN:
+## HOW TO RUN (use python 3):
 ```console
 python3 main.py < input.txt
 ```
