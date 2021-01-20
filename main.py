@@ -1,6 +1,5 @@
 # Question 1 - Planet Problem
 
-
 def str_to_coord(line):
     """
     Takes a string, splits the string and turns it into a list that represents coordinates.
